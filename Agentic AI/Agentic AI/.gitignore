@@ -1,0 +1,36 @@
+# Secrets and configuration
+.env
+secrets.toml
+
+# Database files — never commit user financial data
+*.db
+*.sqlite
+*.sqlite3
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env.local
+
+# Testing artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo

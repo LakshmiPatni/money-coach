@@ -1,0 +1,6 @@
+A/c XX1234 debited for Rs 450.00 on 2026-10-20 via UPI to Swiggy. Ref: 123456789.
+Salary of Rs 60000.00 credited to A/c XX1234 on 2026-10-01.
+Debited Rs 200.00 from A/c XX1234 for Uber ride on 2026-10-21.
+UPI Transaction of Rs 119.00 to Spotify successful. A/c XX1234.
+Payment of Rs 15000.00 made to Landlord via NetBanking. A/c XX1234.
+A/c XX1234 debited for Rs 649.00 to Netflix on 2026-10-15.
