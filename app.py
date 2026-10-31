@@ -18,7 +18,7 @@ import requests
 
 from demo_data import sample, demo_csv_text
 
-BACKEND_URL = "http://127.0.0.1:8000"
+BACKEND_URL = "https://money-coach-r0xc.onrender.com"
 
 def fetch_backend_dashboard():
     """Fetches real-time dashboard calculations from the FastAPI backend with fallback."""
