@@ -17,9 +17,36 @@ import streamlit as st
 import requests
 
 from demo_data import sample, demo_csv_text
-
+import os
+from google import genai
 BACKEND_URL = "https://money-coach-r0xc.onrender.com"
+def smart_categorize_transaction(description: str) -> str:
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    prompt = f"""
+    Categorize the following transaction description into one of these standard personal finance categories:
+    - Food & Dining (e.g., Zomato, Swiggy, Canteen, Nescafe, Restaurants)
+    - Rent & Housing (e.g., Hostel, PG, House Rent)
+    - Education & Supplies (e.g., Printouts, Stationery, Books, Library Fine)
+    - Transport (e.g., Metro, Auto, Uber, Ola, Fuel)
+    - Shopping (e.g., Amazon, Flipkart, Clothes)
+    - Entertainment (e.g., Movies, PVR, Netflix, Gaming)
+    - Utilities & Bills (e.g., Mobile Recharge, Internet, Electricity)
+    - Income (e.g., Stipend, Salary, Payout, Cash_In)
+    - Miscellaneous / Other
 
+    Transaction description: "{description}"
+
+    Return ONLY the category name. Do not include any extra text, punctuation, or markdown.
+    """
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+        category = response.text.strip()
+        return category if category else "Uncategorized"
+    except Exception:
+        return "Uncategorized"
 def fetch_backend_dashboard():
     """Fetches real-time dashboard calculations from the FastAPI backend with fallback."""
     try:

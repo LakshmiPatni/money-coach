@@ -1,4 +1,6 @@
 from typing import List, Dict, Any
+import os
+from google import genai
 from services.db_service import DBService
 from db import get_db_connection
 
@@ -21,10 +23,49 @@ class CategorizerService:
     }
 
     @classmethod
+    def smart_categorize_with_gemini(cls, merchant: str, description: str) -> str:
+        """
+        Uses Gemini AI to intelligently categorize unmapped transactions.
+        """
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            return "Uncategorized"
+            
+        try:
+            client = genai.Client(api_key=api_key)
+            prompt = f"""
+            Categorize the following transaction into one of these standard personal finance categories:
+            - Food & Dining (e.g., Zomato, Swiggy, Canteen, Mess, Nescafe, Restaurants)
+            - Rent & Housing (e.g., Hostel, PG, House Rent)
+            - Education & Supplies (e.g., Printouts, Photocopy, Stationery, Books, Library Fine)
+            - Transport (e.g., Metro, Auto, Uber, Ola, Fuel)
+            - Shopping (e.g., Amazon, Flipkart, Clothes)
+            - Entertainment (e.g., Movies, PVR, Netflix, Gaming)
+            - Utilities & Bills (e.g., Mobile Recharge, Internet, Electricity)
+            - Income (e.g., Stipend, Salary, Payout, Cash_In)
+            - Miscellaneous / Other
+
+            Merchant: "{merchant}"
+            Description: "{description}"
+
+            Return ONLY the category name. Do not include any extra text, punctuation, or markdown.
+            """
+            
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+            )
+            category = response.text.strip()
+            return category if category else "Uncategorized"
+        except Exception as e:
+            print(f"Gemini Categorization error: {e}")
+            return "Uncategorized"
+
+    @classmethod
     def categorize(cls, merchant: str, description: str) -> str:
         """
         Assigns a category to a transaction based on learned rules,
-        then default mappings, then "Uncategorized".
+        then default mappings, then Gemini AI, and finally "Uncategorized".
         """
         # 1. Check learned rules in DB
         rules = DBService.get_rules()
@@ -34,8 +75,13 @@ class CategorizerService:
 
         # 2. Check default mappings
         for pattern, category in cls.DEFAULT_MAPPINGS.items():
-            if pattern.lower() in merchant.lower():
+            if pattern.lower() in merchant.lower() or pattern.lower() in description.lower():
                 return category
+
+        # 3. Fallback to Gemini AI Smart Categorization
+        ai_category = cls.smart_categorize_with_gemini(merchant, description)
+        if ai_category and ai_category != "Uncategorized":
+            return ai_category
 
         return "Uncategorized"
 
