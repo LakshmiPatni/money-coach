@@ -1221,7 +1221,7 @@ def home(tx, p, s, rec):
         a = backend_dashboard.get("income", s["income"])
         b = backend_dashboard.get("spend", s["spend"])
         c = a - b
-        sub = "from backend engine"
+        sub = ""
     else:
         # Fallback to local Streamlit calculations if backend is offline
         if s["m_has"]:
@@ -1247,7 +1247,8 @@ def home(tx, p, s, rec):
         if backend_nudges:
             st.markdown(f"#### 💡 Smart Nudges (Backend Agent)")
             for nudge_text in backend_nudges:
-                st.info(nudge_text)
+                msg = nudge_text.get("message", nudge_text) if isinstance(nudge_text, dict) else nudge_text
+                st.info(msg)
         else:
             alerts = build_alerts(tx, p, s, rec) if not tx.empty else []
             if alerts:
