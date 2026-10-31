@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-streamlit
-requests
-google-genai
-pydantic
-pdfplumber
